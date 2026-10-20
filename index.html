@@ -6,11 +6,8 @@
     <title>Redirecting...</title>
 </head>
 <body>
-    <a href="#" onclick="setTimeout(function(){var ww = window.open(window.location, '_self'); ww.close(); }, 1000);">
-        If you click on this the window will be closed after 1000ms
-    </a>
     <script type="module">
-import { classifyUrl, errorLink, openLink, BROWSER_OPENS_DIRECTLY, BROWSER_LAUNCHES } from './script.js';
+import { classifyUrl, errorLink, openLink, MISSING_URL, BROWSER_OPENS_DIRECTLY, BROWSER_LAUNCHES } from './script.js';
 
 (async()=>{
     const toLink = new URLSearchParams(location.search).get('to');
@@ -26,6 +23,7 @@ import { classifyUrl, errorLink, openLink, BROWSER_OPENS_DIRECTLY, BROWSER_LAUNC
         openLink(toLink);
         await new Promise(r=>setTimeout(r, 100));
         openLink('about:blank');
+        return;
     }
 
     openLink( errorLink(type) );
