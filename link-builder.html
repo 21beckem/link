@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px auto;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-left: 5px solid #28a745;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        .error {
+            background-color: rgba(255, 0, 0, 0.173);
+            border-left: 3px solid rgb(194, 0, 0);
+            padding: 3px 15px;
+            font-size: 13px;
+            border-radius: 5px;
+            margin: 10px;
+            display: block;
+        }
+        .error.warning {
+            background-color: rgba(255, 187, 0, 0.173);
+            border-left: 3px solid rgb(194, 165, 0);
+        }
+        .error.big {
+            font-size: 1rem;
+            padding: 5px 15px;
+        }
+        .error:not(.show) {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<span id="previousError" class="error big warning"></span>
+<br><br>
+
+<div class="container">
+    <h2>Link Builder</h2>
+    
+    <!-- The form structure -->
+    <form id="urlForm">
+        <label for="urlInput">Enter link to be directed to:</label>
+        <input type="text" id="urlInput" placeholder="https://example.com, sms:1234567890, etc.">
+        <span id="urlError" class="error">Invalid Url</span>
+        <button type="submit">Create Link!</button>
+    </form>
+
+    <!-- Where the result will be displayed -->
+    <div id="resultContainer" style="display: none;" class="result-box">
+        <strong>Encoded URL:</strong>
+        <input type="text" id="encodedOutput" readonly />
+    </div>
+</div>
+
+<script type="module">
+    import { classifyUrl, MISSING_URL, INVALID_URL, CODE_EXECUTION, BROWSER_OPENS_DIRECTLY, BROWSER_LAUNCHES, FAILED_TO_OPEN } from './script.js';
+
+    // handle previous page errors:
+    if (location.hash.startsWith('#')) {
+        const rawErrorCode = new URLSearchParams(location.hash.slice(1)).get('err');
+        const errorCode = parseInt(rawErrorCode);
+        if (!Number.isNaN(errorCode)) {
+            const msg = ({
+                [MISSING_URL]: 'No url was given. Generate one here!',
+                [INVALID_URL]: 'The url you tried to redirect to is invalid.',
+                [CODE_EXECUTION]: '"javascript:" urls are not supported.',
+                [FAILED_TO_OPEN]: 'For some reason, the redirect failed to open. Sorry about that!'
+            })[errorCode];
+            if (msg) {
+                const previousError = document.getElementById('previousError');
+                previousError.textContent = msg;
+                previousError.classList.toggle('show', true);
+            }
+        }
+    }
+
+    const urlInput = document.getElementById('urlInput');
+    const urlError = document.getElementById('urlError');
+    urlInput.addEventListener('input', e => urlError.classList.toggle('show', false));
+    document.getElementById('urlForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevents the form from trying to submit to a server
+
+        const rawUrl = urlInput.value;
+        const type = classifyUrl(rawUrl);
+        if (type === INVALID_URL || type === CODE_EXECUTION) {
+            urlError.classList.toggle('show', true);
+            return;
+        }
+
+        const encodedUrl = (new URL('./?to=', location.href)).href + encodeURIComponent(rawUrl);
+
+        document.getElementById('encodedOutput').value = encodedUrl;
+        document.getElementById('resultContainer').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <a href="#" onclick="setTimeout(function(){var ww = window.open(window.location, '_self'); ww.close(); }, 1000);">
+        If you click on this the window will be closed after 1000ms
+    </a>
+    <script type="module">
+import { classifyUrl, errorLink, openLink, BROWSER_OPENS_DIRECTLY, BROWSER_LAUNCHES } from './script.js';
+
+(async()=>{
+    const toLink = new URLSearchParams(location.search).get('to');
+    if (!toLink)
+        return location.href = errorLink(MISSING_URL);
+
+    const type = classifyUrl(toLink);
+
+    if (type === BROWSER_OPENS_DIRECTLY)
+        return openLink(toLink);
+
+    if (type === BROWSER_LAUNCHES) {
+        openLink(toLink);
+        await new Promise(r=>setTimeout(r, 100));
+        openLink('about:blank');
+    }
+
+    openLink( errorLink(type) );
+})();
+    </script>
+</body>
+</html>
