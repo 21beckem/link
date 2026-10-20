@@ -29,8 +29,8 @@ export function classifyUrl(urlString) {
 export const errorLink = (err) => `link-builder.html#err=${err}`;
 export function openLink(url) {
     try {
-        location.href = url;
+        window.location.replace(url);
     } catch (e) {
-        location.href = errorLink(FAILED_TO_OPEN);
+        window.location.replace( errorLink(FAILED_TO_OPEN) );
     }
 }

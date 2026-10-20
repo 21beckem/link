@@ -6,14 +6,16 @@
     <title>Link Builder</title>
     <style>
         body {
+            color-scheme: light dark; 
             font-family: Arial, sans-serif;
             margin: 30px auto;
             max-width: 600px;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: light-dark(#f9f9f9, #000000);
+            color: light-dark(#000000, #FFFFFF);
         }
         .container {
-            background: #fff;
+            background: light-dark(#fff, #1d1d1d);
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -26,12 +28,15 @@
         input[type="text"] {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid light-dark(#ccc,#333);
             border-radius: 4px;
             box-sizing: border-box;
         }
+        input:active {
+            border: none;
+        }
         button {
-            background-color: #007BFF;
+            background-color: light-dark(#007BFF, #0058b7);
             color: white;
             border: none;
             padding: 10px 15px;
@@ -40,12 +45,12 @@
             font-size: 16px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: light-dark(#0056b3, #004a9a);
         }
         .result-box {
             margin-top: 25px;
             padding: 15px;
-            background-color: #e9ecef;
+            background-color: light-dark(#e9ecef, #000000);
             border-left: 5px solid #28a745;
             border-radius: 4px;
             word-break: break-all;
@@ -116,6 +121,11 @@
                 previousError.classList.toggle('show', true);
             }
         }
+        history.replaceState(
+            null, 
+            document.title, 
+            window.location.pathname + window.location.search
+        );
     }
 
     const urlInput = document.getElementById('urlInput');
